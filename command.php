@@ -24,7 +24,7 @@ class Host_Check_Command {
 	public function __invoke() {
 		global $wpdb;
 
-		$path = realpath( WP_CLI::get_config( 'path' ) );
+		$path = WP_CLI::get_config( 'path' );
 		WP_CLI::log( 'Loading: ' . $path );
 
 		// See how far we can get with loading WordPress
