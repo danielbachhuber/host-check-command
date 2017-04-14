@@ -109,33 +109,8 @@ class Host_Check_Command {
 
 		self::maybe_update_url_from_domain_constant();
 
-		// Behold, wp-settings.php
-		define( 'WPINC', 'wp-includes' );
-
-		// Include files required for initialization.
-		require( ABSPATH . WPINC . '/load.php' );
-		require( ABSPATH . WPINC . '/default-constants.php' );
-		require( ABSPATH . WPINC . '/plugin.php' );
-
-		global $wp_version, $wp_db_version, $tinymce_version, $required_php_version, $required_mysql_version, $wp_local_package;
-		require( ABSPATH . WPINC . '/version.php' );
-
-		global $blog_id;
-		wp_initial_constants();
-		wp_check_php_mysql_versions();
-		@ini_set( 'magic_quotes_runtime', 0 );
-		@ini_set( 'magic_quotes_sybase',  0 );
-		date_default_timezone_set( 'UTC' );
-		wp_unregister_GLOBALS();
-		wp_fix_server_vars();
-		wp_set_lang_dir();
-		require( ABSPATH . WPINC . '/compat.php' );
-		require( ABSPATH . WPINC . '/functions.php' );
-		require( ABSPATH . WPINC . '/class-wp.php' );
-		require( ABSPATH . WPINC . '/class-wp-error.php' );
-		require( ABSPATH . WPINC . '/pomo/mo.php' );
-		require( ABSPATH . WPINC . '/formatting.php' );
-		require_wp_db();
+		define( 'COMMAND_ABSPATH', dirname( __FILE__ ) . '/wp/' );
+		require COMMAND_ABSPATH . '/wp-settings.php';
 	}
 
 	private static function maybe_update_url_from_domain_constant() {
