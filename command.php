@@ -58,8 +58,11 @@ class Host_Check_Command {
 			// Check to see when the next version check would've been
 			$next_check = self::get_next_check();
 			$status = self::get_host_status();
+			if ( 'yes' === $status ) {
+				$status .= '-' . self::get_login_status();
+			}
 		}
-		WP_CLI::log( "Summary: {$path}, {$wp_version}, {$next_check}, {$status}" );
+		WP_CLI::log( "Summary: {$path}, {$status}, {$wp_version}, {$next_check}" );
 	}
 
 	private static function wp_exists() {
@@ -164,6 +167,18 @@ class Host_Check_Command {
 		$ret = unlink( $test_file_path );
 		if ( ! $ret ) {
 			WP_CLI::error( "Couldn't delete test file: {$test_file_path}" );
+		}
+		return $status;
+	}
+
+	private static function get_login_status() {
+		$response = Utils\http_request( 'GET', wp_login_url() );
+		if ( false !== strpos( $response->body, 'name="log"' ) ) {
+			$status = 'valid-login';
+			WP_CLI::log( "Yes: wp-login loads as expected (HTTP code {$response->status_code})" );
+		} else {
+			$status = 'broken-login';
+			WP_CLI::log( "No: wp-login is missing name=\"log\" (HTTP code {$response->status_code})" );
 		}
 		return $status;
 	}

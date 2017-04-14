@@ -68,6 +68,8 @@ require( COMMAND_ABSPATH . WPINC . '/class-wp.php' );
 require( COMMAND_ABSPATH . WPINC . '/class-wp-error.php' );
 require( COMMAND_ABSPATH . WPINC . '/class-phpass.php' );
 require( COMMAND_ABSPATH . WPINC . '/formatting.php' );
+require( COMMAND_ABSPATH . WPINC . '/general-template.php' );
+require( COMMAND_ABSPATH . WPINC . '/link-template.php' );
 
 // Include the wpdb class and, if present, a db.php database drop-in.
 global $wpdb;
