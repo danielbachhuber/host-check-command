@@ -155,13 +155,14 @@ class Host_Check_Command {
 			WP_CLI::error( "Couldn't write test file to path: {$test_file_path}" );
 		}
 		// Fetch and check the test file
-		$response = Utils\http_request( 'GET', $upload_dir['baseurl'] . '/' . $test_file );
-		if ( $uuid === $response->body ) {
+		$response = self::http_request( 'GET', $upload_dir['baseurl'] . '/' . $test_file );
+		$status_code = ! empty( $response->status_code ) ? $response->status_code : 'NA';
+		if ( ! empty( $response ) && $uuid === $response->body ) {
 			$status = 'yes';
-			WP_CLI::log( "Yes: WordPress install is hosted here (HTTP code {$response->status_code})" );
+			WP_CLI::log( "Yes: WordPress install is hosted here (HTTP code {$status_code})" );
 		} else {
 			$status = 'no';
-			WP_CLI::log( "No: WordPress install isn't hosted here (HTTP code {$response->status_code})" );
+			WP_CLI::log( "No: WordPress install isn't hosted here (HTTP code {$status_code})" );
 		}
 		// Don't need the test file anymore
 		$ret = unlink( $test_file_path );
@@ -172,16 +173,52 @@ class Host_Check_Command {
 	}
 
 	private static function get_login_status() {
-		$response = Utils\http_request( 'GET', wp_login_url() );
+		$response = self::http_request( 'GET', wp_login_url() );
+		$status_code = ! empty( $response->status_code ) ? $response->status_code : 'NA';
 		if ( false !== strpos( $response->body, 'name="log"' ) ) {
 			$status = 'valid-login';
-			WP_CLI::log( "Yes: wp-login loads as expected (HTTP code {$response->status_code})" );
+			WP_CLI::log( "Yes: wp-login loads as expected (HTTP code {$status_code})" );
 		} else {
 			$status = 'broken-login';
-			WP_CLI::log( "No: wp-login is missing name=\"log\" (HTTP code {$response->status_code})" );
+			WP_CLI::log( "No: wp-login is missing name=\"log\" (HTTP code {$status_code})" );
 		}
 		return $status;
 	}
+
+	private static function http_request( $method, $url, $data = null, $headers = array(), $options = array() ) {
+		$cert_path = '/rmccue/requests/library/Requests/Transport/cacert.pem';
+		if ( Utils\inside_phar() ) {
+			// cURL can't read Phar archives
+			$options['verify'] = Utils\extract_from_phar(
+			WP_CLI_ROOT . '/vendor' . $cert_path );
+		} else {
+			foreach( Utils\get_vendor_paths() as $vendor_path ) {
+				if ( file_exists( $vendor_path . $cert_path ) ) {
+					$options['verify'] = $vendor_path . $cert_path;
+					break;
+				}
+			}
+			if ( empty( $options['verify'] ) ){
+				\WP_CLI::warning( "Cannot find SSL certificate." );
+				return false;
+			}
+		}
+
+		try {
+			$request = \Requests::request( $url, $headers, $data, $method, $options );
+			return $request;
+		} catch( \Requests_Exception $ex ) {
+			// Handle SSL certificate issues gracefully
+			\WP_CLI::warning( $ex->getMessage() );
+			$options['verify'] = false;
+			try {
+				return \Requests::request( $url, $headers, $data, $method, $options );
+			} catch( \Requests_Exception $ex ) {
+				\WP_CLI::warning( $ex->getMessage() );
+				return false;
+			}
+		}
+}
 
 }
 
