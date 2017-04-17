@@ -868,13 +868,13 @@ function wp_load_translations_early() {
 	require ABSPATH . WPINC . '/version.php';
 
 	// Translation and localization
-	require_once ABSPATH . WPINC . '/pomo/mo.php';
-	require_once ABSPATH . WPINC . '/l10n.php';
-	require_once ABSPATH . WPINC . '/class-wp-locale.php';
-	require_once ABSPATH . WPINC . '/class-wp-locale-switcher.php';
+	require_once COMMAND_ABSPATH . WPINC . '/pomo/mo.php';
+	require_once COMMAND_ABSPATH . WPINC . '/l10n.php';
+	require_once COMMAND_ABSPATH . WPINC . '/class-wp-locale.php';
+	require_once COMMAND_ABSPATH . WPINC . '/class-wp-locale-switcher.php';
 
 	// General libraries
-	require_once ABSPATH . WPINC . '/plugin.php';
+	require_once COMMAND_ABSPATH . WPINC . '/plugin.php';
 
 	$locales = $locations = array();
 
