@@ -74,3 +74,25 @@ require( COMMAND_ABSPATH . WPINC . '/link-template.php' );
 // Include the wpdb class and, if present, a db.php database drop-in.
 global $wpdb;
 require_wp_db();
+if ( ! empty( $wpdb->error ) ) {
+	return;
+}
+
+// Set the database table prefix and the format specifiers for database table columns.
+$GLOBALS['table_prefix'] = $table_prefix;
+wp_set_wpdb_vars();
+
+// Start the WordPress object cache, or an external object cache if the drop-in is present.
+wp_start_object_cache();
+
+// Initialize multisite if enabled.
+if ( is_multisite() ) {
+	require( COMMAND_ABSPATH . WPINC . '/class-wp-site-query.php' );
+	require( COMMAND_ABSPATH . WPINC . '/class-wp-network-query.php' );
+	require( COMMAND_ABSPATH . WPINC . '/ms-blogs.php' );
+	require( COMMAND_ABSPATH . WPINC . '/ms-settings.php' );
+} elseif ( ! defined( 'MULTISITE' ) ) {
+	define( 'MULTISITE', false );
+}
+
+wp_plugin_directory_constants();

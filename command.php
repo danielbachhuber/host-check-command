@@ -46,11 +46,6 @@ class Host_Check_Command {
 			self::load_wordpress_lite();
 			if ( ! empty( $wpdb->error ) ) {
 				$status = 'error-db-connect';
-			} else {
-				// Remaining bootstrap steps
-				wp_set_wpdb_vars();
-				wp_start_object_cache();
-				wp_plugin_directory_constants();
 			}
 		}
 
