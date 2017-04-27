@@ -1,7 +1,7 @@
 Feature: Check whether a WordPress install is still hosted here
 
   @broken
-  Scenario: 'yes-valid-login' status when WordPress is functional
+  Scenario: 'hosted-valid-login' status when WordPress is functional
     Given a WP install
     And I run `wp option update home http://localhost:8181`
     And I run `wp option update siteurl http://localhost:8181`
@@ -18,7 +18,7 @@ Feature: Check whether a WordPress install is still hosted here
       """
     And STDOUT should contain:
       """
-      Summary: ./, yes-valid-login
+      Summary: ./, hosted-valid-login
       """
 
   Scenario: 'no-wp-exists' status when WordPress doesn't exist
@@ -74,7 +74,7 @@ Feature: Check whether a WordPress install is still hosted here
       """
 
   @broken
-  Scenario: 'yes-broken-login' status when WordPress has a broken login
+  Scenario: 'hosted-broken-login' status when WordPress has a broken login
     Given a WP install
     And I run `wp option update home http://localhost:8181`
     And I run `wp option update siteurl http://localhost:8181`
@@ -92,11 +92,11 @@ Feature: Check whether a WordPress install is still hosted here
       """
     And STDOUT should contain:
       """
-      Summary: ./, yes-broken-login
+      Summary: ./, hosted-broken-login
       """
 
   @broken
-  Scenario: 'yes-maintenance' status when WordPress is in maintenance mode
+  Scenario: 'hosted-maintenance' status when WordPress is in maintenance mode
     Given a WP install
     And I run `wp option update home http://localhost:8181`
     And I run `wp option update siteurl http://localhost:8181`
@@ -118,11 +118,11 @@ Feature: Check whether a WordPress install is still hosted here
       """
     And STDOUT should contain:
       """
-      Summary: ./, yes-maintenance
+      Summary: ./, hosted-maintenance
       """
 
   @broken
-  Scenario: 'yes-php-fatal' status when WordPress has a fatal error
+  Scenario: 'hosted-php-fatal' status when WordPress has a fatal error
     Given a WP install
     And I run `wp option update home http://localhost:8181`
     And I run `wp option update siteurl http://localhost:8181`
@@ -145,7 +145,7 @@ Feature: Check whether a WordPress install is still hosted here
       """
     And STDOUT should contain:
       """
-      Summary: ./, yes-php-fatal
+      Summary: ./, hosted-php-fatal
       """
 
   Scenario: host check shouldn't create wp-content/uploads if it doesn't exist
