@@ -29,6 +29,16 @@ Feature: Check whether a WordPress install is still hosted here
       Summary: ./, error-db-connect
       """
 
+  Scenario: 'error-db-select' status when invalid database name
+    Given a WP install
+    And "define( 'DB_NAME', 'wp_cli_test' );" replaced with "define( 'DB_NAME', 'wp_cli_test2' );" in the wp-config.php file
+
+    When I run `wp host-check --path=./`
+    Then STDOUT should contain:
+      """
+      Summary: ./, error-db-select
+      """
+
   Scenario: 'missing-200' status when performing the file check
     Given a WP install
 

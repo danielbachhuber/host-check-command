@@ -45,7 +45,7 @@ class Host_Check_Command {
 		if ( false === $status ) {
 			self::load_wordpress_lite();
 			if ( ! empty( $wpdb->error ) ) {
-				$status = 'error-db-connect';
+				$status = 'db_select_fail' === $wpdb->error->get_error_code() ? 'error-db-select' : 'error-db-connect';
 			}
 		}
 
