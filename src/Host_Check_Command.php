@@ -156,8 +156,8 @@ class Host_Check_Command {
 			$status = 'yes';
 			WP_CLI::log( "Yes: WordPress install is hosted here (HTTP code {$status_code})" );
 		} else {
-			$status = 'no-' . $status_code;
-			WP_CLI::log( "No: WordPress install isn't hosted here (HTTP code {$status_code})" );
+			$status = 'missing-' . $status_code;
+			WP_CLI::log( "Missing: WordPress install isn't hosted here (HTTP code {$status_code})" );
 		}
 		// Don't need the test file anymore
 		$ret = unlink( $test_file_path );
