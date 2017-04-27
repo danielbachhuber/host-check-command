@@ -173,6 +173,9 @@ class Host_Check_Command {
 		if ( false !== strpos( $response->body, 'name="log"' ) ) {
 			$status = 'valid-login';
 			WP_CLI::log( "Yes: wp-login loads as expected (HTTP code {$status_code})" );
+		} elseif ( false !== stripos( $response->body, 'Briefly unavailable for scheduled maintenance. Check back in a minute.' ) ) {
+			$status = 'maintenance';
+			WP_CLI::log( "No: WordPress is in maintenance mode (HTTP code {$status_code})" );
 		} else {
 			$status = 'broken-login';
 			WP_CLI::log( "No: wp-login is missing name=\"log\" (HTTP code {$status_code})" );

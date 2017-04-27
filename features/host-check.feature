@@ -1,5 +1,25 @@
 Feature: Check whether a WordPress install is still hosted here
 
+  Scenario: 'yes-valid-login' status when WordPress is functional
+    Given a WP install
+    And I run `wp option update home http://localhost:8181`
+    And I run `wp option update siteurl http://localhost:8181`
+    And I launch in the background `wp server --host=localhost --port=8181`
+
+    When I run `wp host-check --path=./`
+    Then STDOUT should contain:
+      """
+      Yes: WordPress install is hosted here (HTTP code 200)
+      """
+    And STDOUT should contain:
+      """
+      Yes: wp-login loads as expected (HTTP code 200)
+      """
+    And STDOUT should contain:
+      """
+      Summary: ./, yes-valid-login
+      """
+
   Scenario: 'no-wp-exists' status when WordPress doesn't exist
     Given an empty directory
 
@@ -50,6 +70,52 @@ Feature: Check whether a WordPress install is still hosted here
     And STDOUT should contain:
       """
       Summary: ./, missing-404
+      """
+
+  Scenario: 'yes-broken-login' status when WordPress has a broken login
+    Given a WP install
+    And I run `wp option update home http://localhost:8181`
+    And I run `wp option update siteurl http://localhost:8181`
+    And I launch in the background `wp server --host=localhost --port=8181`
+    And I run `echo "<?php" > wp-login.php`
+
+    When I run `wp host-check --path=./`
+    Then STDOUT should contain:
+      """
+      Yes: WordPress install is hosted here (HTTP code 200)
+      """
+    And STDOUT should contain:
+      """
+      No: wp-login is missing name="log" (HTTP code 200)
+      """
+    And STDOUT should contain:
+      """
+      Summary: ./, yes-broken-login
+      """
+
+  Scenario: 'yes-maintenance' status when WordPress is in maintenance mode
+    Given a WP install
+    And I run `wp option update home http://localhost:8181`
+    And I run `wp option update siteurl http://localhost:8181`
+    And I launch in the background `wp server --host=localhost --port=8181`
+    And a .maintenance file:
+      """
+      <?php
+      $upgrading = time();
+      """
+
+    When I run `wp host-check --path=./`
+    Then STDOUT should contain:
+      """
+      Yes: WordPress install is hosted here (HTTP code 200)
+      """
+    And STDOUT should contain:
+      """
+      No: WordPress is in maintenance mode (HTTP code 503)
+      """
+    And STDOUT should contain:
+      """
+      Summary: ./, yes-maintenance
       """
 
   Scenario: host check shouldn't create wp-content/uploads if it doesn't exist
