@@ -53,7 +53,7 @@ class Host_Check_Command {
 			// Check to see when the next version check would've been
 			$next_check = self::get_next_check();
 			$status = self::get_host_status();
-			if ( 'yes' === $status ) {
+			if ( 'hosted' === $status ) {
 				$status .= '-' . self::get_login_status();
 			}
 		}
@@ -153,7 +153,7 @@ class Host_Check_Command {
 		$response = self::http_request( 'GET', $upload_dir['baseurl'] . '/' . $test_file );
 		$status_code = ! empty( $response->status_code ) ? $response->status_code : 'NA';
 		if ( ! empty( $response ) && $uuid === $response->body ) {
-			$status = 'yes';
+			$status = 'hosted';
 			WP_CLI::log( "Yes: WordPress install is hosted here (HTTP code {$status_code})" );
 		} else {
 			$status = 'missing-' . $status_code;
@@ -173,6 +173,12 @@ class Host_Check_Command {
 		if ( false !== strpos( $response->body, 'name="log"' ) ) {
 			$status = 'valid-login';
 			WP_CLI::log( "Yes: wp-login loads as expected (HTTP code {$status_code})" );
+		} elseif ( false !== stripos( $response->body, 'Briefly unavailable for scheduled maintenance. Check back in a minute.' ) ) {
+			$status = 'maintenance';
+			WP_CLI::log( "No: WordPress is in maintenance mode (HTTP code {$status_code})" );
+		} elseif ( false !== stripos( $response->body, 'Fatal error' ) ) {
+			$status = 'php-fatal';
+			WP_CLI::log( "No: WordPress has a PHP fatal error (HTTP code {$status_code})" );
 		} else {
 			$status = 'broken-login';
 			WP_CLI::log( "No: wp-login is missing name=\"log\" (HTTP code {$status_code})" );
