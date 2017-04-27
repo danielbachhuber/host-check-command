@@ -121,6 +121,33 @@ Feature: Check whether a WordPress install is still hosted here
       Summary: ./, yes-maintenance
       """
 
+  @broken
+  Scenario: 'yes-php-fatal' status when WordPress has a fatal error
+    Given a WP install
+    And I run `wp option update home http://localhost:8181`
+    And I run `wp option update siteurl http://localhost:8181`
+    And "define( 'DB_NAME', 'wp_cli_test' );" replaced with "define( 'DB_NAME', 'wp_cli_test' );define('WP_DEBUG', true);" in the wp-config.php file
+    And I launch in the background `wp server --host=localhost --port=8181`
+    And a wp-content/mu-plugins/local.php file:
+      """
+      <?php
+      foobarmissingfunc();
+      """
+
+    When I run `wp host-check --path=./`
+    Then STDOUT should contain:
+      """
+      Yes: WordPress install is hosted here (HTTP code 200)
+      """
+    And STDOUT should contain:
+      """
+      No: WordPress has a PHP fatal error (HTTP code 200)
+      """
+    And STDOUT should contain:
+      """
+      Summary: ./, yes-php-fatal
+      """
+
   Scenario: host check shouldn't create wp-content/uploads if it doesn't exist
     Given a WP install
     And I run `rm -rf wp-content/uploads`
