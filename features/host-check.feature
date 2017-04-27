@@ -1,5 +1,6 @@
 Feature: Check whether a WordPress install is still hosted here
 
+  @broken
   Scenario: 'yes-valid-login' status when WordPress is functional
     Given a WP install
     And I run `wp option update home http://localhost:8181`
@@ -72,6 +73,7 @@ Feature: Check whether a WordPress install is still hosted here
       Summary: ./, missing-404
       """
 
+  @broken
   Scenario: 'yes-broken-login' status when WordPress has a broken login
     Given a WP install
     And I run `wp option update home http://localhost:8181`
@@ -93,6 +95,7 @@ Feature: Check whether a WordPress install is still hosted here
       Summary: ./, yes-broken-login
       """
 
+  @broken
   Scenario: 'yes-maintenance' status when WordPress is in maintenance mode
     Given a WP install
     And I run `wp option update home http://localhost:8181`
