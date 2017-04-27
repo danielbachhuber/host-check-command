@@ -142,7 +142,7 @@ class Host_Check_Command {
 	private static function get_host_status() {
 		// Generate a test file to fetch and check
 		$uuid = md5( mt_rand( 0, 100000 ) );
-		$upload_dir = wp_upload_dir();
+		$upload_dir = wp_upload_dir( null, false );
 		$test_file = $uuid . '.txt';
 		$test_file_path = $upload_dir['basedir'] . '/' . $test_file;
 		$ret = file_put_contents( $test_file_path, $uuid );
