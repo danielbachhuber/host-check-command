@@ -29,7 +29,15 @@ class Host_Check_Command {
 
 		// See how far we can get with loading WordPress
 		$status = false;
-		$wp_version = $next_check = '';
+		$wp_version = '';
+		$wp_details = array(
+			'next_version_check' => null,
+			'active_plugins'     => null,
+			'active_theme'       => null,
+			'user_count'         => null,
+			'post_count'         => null,
+			'last_post_date'     => null,
+		);
 		if ( ! self::wp_exists() ) {
 			$status = 'no-wp-exists';
 		}
@@ -51,13 +59,23 @@ class Host_Check_Command {
 
 		if ( false === $status ) {
 			// Check to see when the next version check would've been
-			$next_check = self::get_next_check();
+			$wp_details['wp_version_check'] = self::get_next_check();
 			$status = self::get_host_status();
 			if ( 'hosted' === $status ) {
 				$status .= '-' . self::get_login_status();
 			}
+			$row = $wpdb->get_row( "SELECT option_value FROM {$wpdb->options} WHERE option_name='active_plugins'" );
+			$wp_details['active_plugins'] = unserialize( $row->option_value );
+			$row = $wpdb->get_row( "SELECT option_value FROM {$wpdb->options} WHERE option_name='stylesheet'" );
+			$wp_details['active_theme'] = $row->option_value;
+			$wp_details['user_count'] = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->users}" );
+			$wp_details['post_count'] = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_status = 'publish'" );
+			$row = $wpdb->get_row( "SELECT post_date_gmt FROM {$wpdb->posts} WHERE post_status='publish' ORDER BY post_date DESC LIMIT 0,1" );
+			$wp_details['last_post_date'] = $row->post_date_gmt;
 		}
-		self::log( "Summary: {$path}, {$status}, {$wp_version}, {$next_check}" );
+		self::log( "Summary: {$path}, {$status}, {$wp_version}" );
+		$wp_details = json_encode( $wp_details );
+		self::log( "Details: {$wp_details}" );
 	}
 
 	private static function wp_exists() {
