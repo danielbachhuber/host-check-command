@@ -25,7 +25,7 @@ class Host_Check_Command {
 		global $wpdb;
 
 		$path = WP_CLI::get_config( 'path' );
-		WP_CLI::log( 'Loading: ' . $path );
+		self::log( 'Loading: ' . $path );
 
 		// See how far we can get with loading WordPress
 		$status = false;
@@ -35,7 +35,7 @@ class Host_Check_Command {
 		}
 		if ( false === $status ) {
 			$wp_version = self::get_wp_version();
-			WP_CLI::log( 'WordPress version: ' . $wp_version );
+			self::log( 'WordPress version: ' . $wp_version );
 			$wp_config_path = Utils\locate_wp_config();
 			if ( ! $wp_config_path ) {
 				$status = 'no-wp-config';
@@ -57,7 +57,7 @@ class Host_Check_Command {
 				$status .= '-' . self::get_login_status();
 			}
 		}
-		WP_CLI::log( "Summary: {$path}, {$status}, {$wp_version}, {$next_check}" );
+		self::log( "Summary: {$path}, {$status}, {$wp_version}, {$next_check}" );
 	}
 
 	private static function wp_exists() {
@@ -131,7 +131,7 @@ class Host_Check_Command {
 				}
 				if ( isset( $task['wp_version_check'] ) ) {
 					$next_check = date( 'Y-m-d H:i:s', $timestamp );
-					WP_CLI::log( 'Next scheduled wp_version_check: ' . $next_check );
+					self::log( 'Next scheduled wp_version_check: ' . $next_check );
 					break;
 				}
 			}
@@ -154,10 +154,10 @@ class Host_Check_Command {
 		$status_code = ! empty( $response->status_code ) ? $response->status_code : 'NA';
 		if ( ! empty( $response ) && $uuid === $response->body ) {
 			$status = 'hosted';
-			WP_CLI::log( "Yes: WordPress install is hosted here (HTTP code {$status_code})" );
+			self::log( "Yes: WordPress install is hosted here (HTTP code {$status_code})" );
 		} else {
 			$status = 'missing-' . $status_code;
-			WP_CLI::log( "Missing: WordPress install isn't hosted here (HTTP code {$status_code})" );
+			self::log( "Missing: WordPress install isn't hosted here (HTTP code {$status_code})" );
 		}
 		// Don't need the test file anymore
 		$ret = unlink( $test_file_path );
@@ -172,16 +172,16 @@ class Host_Check_Command {
 		$status_code = ! empty( $response->status_code ) ? $response->status_code : 'NA';
 		if ( false !== strpos( $response->body, 'name="log"' ) ) {
 			$status = 'valid-login';
-			WP_CLI::log( "Yes: wp-login loads as expected (HTTP code {$status_code})" );
+			self::log( "Yes: wp-login loads as expected (HTTP code {$status_code})" );
 		} elseif ( false !== stripos( $response->body, 'Briefly unavailable for scheduled maintenance. Check back in a minute.' ) ) {
 			$status = 'maintenance';
-			WP_CLI::log( "No: WordPress is in maintenance mode (HTTP code {$status_code})" );
+			self::log( "No: WordPress is in maintenance mode (HTTP code {$status_code})" );
 		} elseif ( false !== stripos( $response->body, 'Fatal error' ) ) {
 			$status = 'php-fatal';
-			WP_CLI::log( "No: WordPress has a PHP fatal error (HTTP code {$status_code})" );
+			self::log( "No: WordPress has a PHP fatal error (HTTP code {$status_code})" );
 		} else {
 			$status = 'broken-login';
-			WP_CLI::log( "No: wp-login is missing name=\"log\" (HTTP code {$status_code})" );
+			self::log( "No: wp-login is missing name=\"log\" (HTTP code {$status_code})" );
 		}
 		return $status;
 	}
@@ -219,6 +219,14 @@ class Host_Check_Command {
 				return false;
 			}
 		}
+	}
+
+	/**
+	 * Log informational message to STDOUT with current timestamp.
+	 */
+	private static function log( $message ) {
+		$timestamp = date( 'Y-m-d H:i:s' );
+		WP_CLI::log( sprintf( '[%s] %s', $timestamp, $message ) );
 	}
 
 }
