@@ -31,7 +31,7 @@ class Host_Check_Command {
 		$status = false;
 		$wp_version = '';
 		$wp_details = array(
-			'next_version_check' => null,
+			'wp_version_check'   => null,
 			'active_plugins'     => null,
 			'active_theme'       => null,
 			'user_count'         => null,
