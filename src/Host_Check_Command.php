@@ -66,6 +66,9 @@ class Host_Check_Command {
 			}
 			$row = $wpdb->get_row( "SELECT option_value FROM {$wpdb->options} WHERE option_name='active_plugins'" );
 			$wp_details['active_plugins'] = unserialize( $row->option_value );
+			if ( is_array( $wp_details['active_plugins'] ) ) {
+				$wp_details['active_plugins'] = array_unique( $wp_details['active_plugins'] );
+			}
 			$row = $wpdb->get_row( "SELECT option_value FROM {$wpdb->options} WHERE option_name='stylesheet'" );
 			$wp_details['active_theme'] = $row->option_value;
 			$wp_details['user_count'] = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->users}" );
