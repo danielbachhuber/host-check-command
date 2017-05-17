@@ -140,7 +140,7 @@ class FeatureContext extends BehatContext implements ClosuredContextInterface {
 	}
 
 	/**
-	 * Terminate a process and any of its children.
+	 * Terminate a process and any of its children. Takes a process id.
 	 */
 	private static function terminate_proc( $master_pid ) {
 
