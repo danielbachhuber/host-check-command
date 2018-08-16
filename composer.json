@@ -1,6 +1,6 @@
 {
     "name": "danielbachhuber/host-check-command",
-    "description": "",
+    "description": "Checks hosting status for WordPress installation.",
     "type": "wp-cli-package",
     "homepage": "https://github.com/danielbachhuber/host-check-command",
     "license": "MIT",
@@ -31,5 +31,10 @@
           "@phpunit",
           "@behat"
       ]
+    },
+    "extra": {
+        "commands": [
+            "host-check"
+        ]
     }
 }
