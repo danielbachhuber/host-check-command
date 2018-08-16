@@ -3,21 +3,56 @@
 use WP_CLI\Utils;
 
 /**
- * Checks that the WordPress install is still hosted at its internal domain.
+ * Checks hosting status for WordPress installation.
  */
 class Host_Check_Command {
 
 	/**
-	 * Checks that the WordPress install is still hosted at its internal domain.
+	 * Checks hosting status for WordPress installation.
 	 *
-	 * Run with `wp --require=host-check.php host-check --path=<path-to-wp>`
+	 * Loads the WordPress installation to verify that it's still hosted on this server.
+	 *
+	 * First, it verifies the WordPress installation loads. Next, it makes a HTTP
+	 * request to determine: 1) whether the installation is still on the server,
+	 * and 2) whether the installation loads as expected.
+	 *
+	 * Potential statuses include:
+	 *
+	 * * no-wp-exists - WordPress doesn't exist at the path.
+	 * * no-wp-config - No wp-config.php file was found for the installation.
+	 * * error-db-connect - Couldn't connect to the database using defined credentials.
+	 * * error-db-select - Connected to the database but couldn't select specific database.
+	 * * missing-<http-code> - WordPress installation isn't on the server.
+	 * * hosted-maintenance - WordPress installation is hosted but renders maintenance page.
+	 * * hosted-php-fatal - WordPress installation is hosted but has a PHP fatal.
+	 * * hosted-broken-wp-login - WordPress installation is hosted but the login page is broken.
+	 * * hosted-valid-login - WordPress installation is hosted on server and login page loads.
 	 *
 	 * Disables WP cron to prevent 'wp_version_check' from being run.
 	 *
 	 * ## OPTIONS
 	 *
 	 * --path=<path>
-	 * : Path to the WordPress install
+	 * : Path to the WordPress installation.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     # Site loads successfully and is hosted on the server.
+	 *     $ wp host-check --path=wordpress
+	 *     [2018-08-16 13:41:48] Loading: wordpress
+	 *     [2018-08-16 13:41:48] WordPress version: 4.9.8
+	 *     [2018-08-16 13:41:48] Next scheduled wp_version_check: 2018-08-13 23:31:31
+	 *     [2018-08-16 13:41:48] Yes: WordPress install is hosted here (HTTP code 200)
+	 *     [2018-08-16 13:41:49] Yes: wp-login loads as expected (HTTP code 200)
+	 *     [2018-08-16 13:41:49] Summary: wordpress, hosted-valid-login, 4.9.8
+	 *     [2018-08-16 13:41:49] Details: {"wp_version_check":"2018-08-13 23:31:31","active_plugins":["debug-bar\/debug-bar.php"],"active_theme":"wordpress-theme","user_count":3,"post_count":89,"last_post_date":"2018-08-06 13:22:39"}
+	 *
+	 *     # Error connecting to the database when loading site.
+	 *     $ wp host-check --path=wordpress
+	 *     [2018-08-16 13:40:03] Loading: wordpress
+	 *     [2018-08-16 13:40:03] WordPress version: 4.7.6
+	 *     [2018-08-16 13:40:03] Summary: wordpress, error-db-connect, 4.7.6
+	 *     [2018-08-16 13:40:03] Details: {"wp_version_check":null,"active_plugins":null,"active_theme":null,"user_count":null,"post_count":null,"last_post_date":null
 	 *
 	 * @when before_wp_load
 	 */
