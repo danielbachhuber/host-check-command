@@ -47,7 +47,7 @@ jobs:
   include:
     - stage: sniff
       script:
-        - composer lint
+        # - composer lint
         - composer phpcs
       env: BUILD=sniff
     - stage: test
