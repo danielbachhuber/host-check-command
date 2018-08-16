@@ -117,12 +117,12 @@ class Host_Check_Command {
 
 		// Load wp-config.php code, in the global scope
 		$wp_cli_original_defined_vars = get_defined_vars();
-		eval( self::get_wp_config_code() );
+		eval( self::get_wp_config_code() ); // phpcs:ignore
 		foreach ( get_defined_vars() as $key => $var ) {
 			if ( array_key_exists( $key, $wp_cli_original_defined_vars ) || 'wp_cli_original_defined_vars' === $key ) {
 				continue;
 			}
-			global $$key;
+			global $$key; // phpcs:ignore
 			$$key = $var;
 		}
 
