@@ -18,15 +18,15 @@ class Host_Check_Command {
 	 *
 	 * Potential statuses include:
 	 *
-	 * * no-wp-exists - WordPress doesn't exist at the path.
-	 * * no-wp-config - No wp-config.php file was found for the installation.
-	 * * error-db-connect - Couldn't connect to the database using defined credentials.
-	 * * error-db-select - Connected to the database but couldn't select specific database.
-	 * * missing-<http-code> - WordPress installation isn't on the server.
-	 * * hosted-maintenance - WordPress installation is hosted but renders maintenance page.
-	 * * hosted-php-fatal - WordPress installation is hosted but has a PHP fatal.
-	 * * hosted-broken-wp-login - WordPress installation is hosted but the login page is broken.
-	 * * hosted-valid-login - WordPress installation is hosted on server and login page loads.
+	 * * `no-wp-exists` - WordPress doesn't exist at the path.
+	 * * `no-wp-config` - No wp-config.php file was found for the installation.
+	 * * `error-db-connect` - Couldn't connect to the database using defined credentials.
+	 * * `error-db-select` - Connected to the database but couldn't select specific database.
+	 * * `missing-<http-code>` - WordPress installation isn't on the server.
+	 * * `hosted-maintenance` - WordPress installation is hosted but renders maintenance page.
+	 * * `hosted-php-fatal` - WordPress installation is hosted but has a PHP fatal.
+	 * * `hosted-broken-wp-login` - WordPress installation is hosted but the login page is broken.
+	 * * `hosted-valid-login` - WordPress installation is hosted on server and login page loads.
 	 *
 	 * Disables WP cron to prevent 'wp_version_check' from being run.
 	 *
